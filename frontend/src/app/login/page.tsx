@@ -20,11 +20,15 @@ import { useAuth } from "@/hooks/useAuth";
 /** 简单邮箱正则 */
 const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+/** 手机号正则：1开头11位数字 */
+const PHONE_RE = /^1\d{10}$/;
+
 export default function LoginPage() {
   const router = useRouter();
   const { login } = useAuth();
 
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,8 +36,11 @@ export default function LoginPage() {
 
   /** 表单校验 */
   function validate(): string | null {
-    if (!email.trim()) return "请输入邮箱";
-    if (!EMAIL_RE.test(email.trim())) return "邮箱格式不正确";
+    const emailVal = email.trim();
+    const phoneVal = phone.trim();
+    if (!emailVal && !phoneVal) return "请输入邮箱或手机号";
+    if (emailVal && !EMAIL_RE.test(emailVal)) return "邮箱格式不正确";
+    if (phoneVal && !PHONE_RE.test(phoneVal)) return "手机号格式不正确（需为1开头的11位数字）";
     if (!password) return "请输入密码";
     return null;
   }
@@ -51,7 +58,7 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
     try {
-      await login(email.trim(), password);
+      await login(email.trim(), password, phone.trim() || undefined);
       router.push("/dashboard");
     } catch (err) {
       const message =
@@ -100,6 +107,24 @@ export default function LoginPage() {
               placeholder="邮箱"
               disabled={isSubmitting}
               autoComplete="email"
+              className="w-full bg-transparent px-2 py-3 font-[family-name:var(--font-body)] text-ink
+                border-b border-ink-light/30
+                placeholder:text-warning
+                focus:border-gold focus:outline-none
+                disabled:opacity-50 disabled:cursor-not-allowed
+                transition-colors duration-300"
+            />
+          </div>
+
+          {/* 手机号 */}
+          <div className="relative">
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="手机号（选填）"
+              disabled={isSubmitting}
+              autoComplete="tel"
               className="w-full bg-transparent px-2 py-3 font-[family-name:var(--font-body)] text-ink
                 border-b border-ink-light/30
                 placeholder:text-warning

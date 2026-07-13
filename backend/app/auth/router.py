@@ -24,19 +24,23 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 # 简单邮箱正则
 _EMAIL_RE = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+# 手机号正则：1 开头 11 位数字
+_PHONE_RE = re.compile(r"^1\d{10}$")
 
 
 class RegisterRequest(BaseModel):
     """注册请求体。"""
 
-    email: str
+    email: str | None = None
+    phone: str | None = None
     password: str
 
 
 class LoginRequest(BaseModel):
     """登录请求体。"""
 
-    email: str
+    email: str | None = None
+    phone: str | None = None
     password: str
 
 
@@ -68,40 +72,34 @@ def _validate_password(password: str) -> bool:
 async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
     """注册新用户。
 
-    Args:
-        req: 注册请求，含 email 和 password。
-        db: 数据库异步会话。
-
-    Returns:
-        TokenResponse: access_token + refresh_token。
-
-    Raises:
-        HTTPException 400: 邮箱或密码格式不合法。
-        HTTPException 409: 邮箱已被注册。
+    支持邮箱或手机号注册，至少提供一个。
     """
+    # 至少提供一个
+    if not req.email and not req.phone:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="邮箱和手机号至少填写一个")
     # 格式校验
-    if not _validate_email(req.email):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="邮箱格式不正确",
-        )
+    if req.email and not _validate_email(req.email):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="邮箱格式不正确")
+    if req.phone and not _PHONE_RE.match(req.phone):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="手机号格式不正确（1开头11位数字）")
     if not _validate_password(req.password):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="密码长度至少 6 位",
-        )
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail="密码长度至少 6 位")
 
     # 检查邮箱是否已注册
-    existing = await db.execute(select(User).where(User.email == req.email))
-    if existing.scalar_one_or_none() is not None:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="该邮箱已被注册",
-        )
+    if req.email:
+        existing = await db.execute(select(User).where(User.email == req.email))
+        if existing.scalar_one_or_none() is not None:
+            raise HTTPException(status.HTTP_409_CONFLICT, detail="该邮箱已被注册")
+    # 检查手机号是否已注册
+    if req.phone:
+        existing = await db.execute(select(User).where(User.phone == req.phone))
+        if existing.scalar_one_or_none() is not None:
+            raise HTTPException(status.HTTP_409_CONFLICT, detail="该手机号已被注册")
 
     # 创建用户
     user = User(
         email=req.email,
+        phone=req.phone,
         password_hash=hash_password(req.password),
     )
     db.add(user)
@@ -120,26 +118,20 @@ async def register(req: RegisterRequest, db: AsyncSession = Depends(get_db)):
 async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
     """用户登录。
 
-    Args:
-        req: 登录请求，含 email 和 password。
-        db: 数据库异步会话。
-
-    Returns:
-        TokenResponse: access_token + refresh_token。
-
-    Raises:
-        HTTPException 401: 邮箱或密码错误（不区分具体原因）。
+    支持邮箱或手机号登录，至少提供一个。
     """
-    # 查找用户
-    result = await db.execute(select(User).where(User.email == req.email))
+    if not req.email and not req.phone:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="邮箱和手机号至少填写一个")
+
+    # 按邮箱或手机号查找
+    if req.email:
+        result = await db.execute(select(User).where(User.email == req.email))
+    else:
+        result = await db.execute(select(User).where(User.phone == req.phone))
     user = result.scalar_one_or_none()
 
-    # 统一错误信息，不区分"邮箱不存在"和"密码错误"
     if user is None or not verify_password(req.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="邮箱或密码错误",
-        )
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="邮箱或密码错误")
 
     user_id_str = str(user.id)
     return TokenResponse(

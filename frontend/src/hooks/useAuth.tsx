@@ -44,9 +44,9 @@ export interface AuthContextValue {
   /** 今日剩余占卜次数（-1 或 Infinity 表示无限制） */
   remainingQuota: number;
   /** 登录：成功后将 token 存 localStorage 并拉取用户信息 */
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, phone?: string) => Promise<void>;
   /** 注册：成功后自动登录 */
-  register: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, phone?: string) => Promise<void>;
   /** 登出：清除 token 和用户状态 */
   logout: () => void;
   /** 页面加载时从 localStorage 恢复 token 并验证有效性 */
@@ -136,12 +136,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   /* ── login：POST /api/auth/login → 存 token → 拉 profile ── */
 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await fetch(`${API_BASE}/api/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  const login = useCallback(
+    async (email: string, password: string, phone?: string) => {
+      const body: Record<string, string> = { email, password };
+      if (phone) body.phone = phone;
+
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
     if (!res.ok) {
       const errorData = await res
@@ -169,16 +173,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser({ email, subscription: "free" });
       setRemainingQuota(3);
     }
-  }, []);
+  },
+  [],
+);
 
   /* ── register：POST /api/auth/register → 自动登录 ── */
 
-  const register = useCallback(async (email: string, password: string) => {
-    const res = await fetch(`${API_BASE}/api/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+  const register = useCallback(
+    async (email: string, password: string, phone?: string) => {
+      const body: Record<string, string> = { email, password };
+      if (phone) body.phone = phone;
+
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
 
     if (!res.ok) {
       const errorData = await res
@@ -205,7 +215,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser({ email, subscription: "free" });
       setRemainingQuota(3);
     }
-  }, []);
+  },
+  [],
+);
 
   /* ── logout：清除所有状态 ── */
 

@@ -25,7 +25,8 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    email = Column(String, unique=True, nullable=False, index=True)
+    email = Column(String, unique=True, nullable=True, index=True)
+    phone = Column(String, unique=True, nullable=True, index=True)
     password_hash = Column(String, nullable=False)
     subscription = Column(String, default="free")  # free / monthly / yearly
     created_at = Column(DateTime, server_default=func.now())

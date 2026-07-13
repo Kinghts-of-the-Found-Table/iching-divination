@@ -24,7 +24,8 @@ router = APIRouter(prefix="/api/user", tags=["user"])
 class ProfileResponse(BaseModel):
     """用户信息响应体。"""
 
-    email: str
+    email: str | None = None
+    phone: str | None = None
     subscription: str
     daily_remaining: int  # -1 表示无限制（付费用户）
     daily_limit: int
@@ -61,6 +62,7 @@ async def get_profile(
 
     return ProfileResponse(
         email=current_user.email,
+        phone=current_user.phone,
         subscription=current_user.subscription,
         daily_remaining=remaining,
         daily_limit=settings.FREE_DAILY_LIMIT,

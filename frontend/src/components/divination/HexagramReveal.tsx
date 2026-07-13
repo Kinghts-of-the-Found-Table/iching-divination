@@ -34,6 +34,8 @@ export interface HexagramRevealProps {
   originalName: string;
   /** 之卦名（无变爻时为空） */
   changedName?: string;
+  /** 八字卦辞（如"刚健中正，纯阳至健"） */
+  description?: string;
   /** 揭示动画全部完成后回调 */
   onComplete: () => void;
 }
@@ -54,6 +56,8 @@ const FLASH_DURATION = 0.2;
 const CHANGED_FADE_DURATION = 1.0;
 /** 结束后停留（秒） */
 const HOLD_DURATION = 0.6;
+/** 卦名浮现动画持续（秒） */
+const NAME_REVEAL_DURATION = 1.2;
 
 /** 爻位名称（自下而上） */
 const POSITION_NAMES = ["初爻", "二爻", "三爻", "四爻", "五爻", "上爻"];
@@ -148,6 +152,7 @@ export default function HexagramReveal({
   lines,
   originalName,
   changedName,
+  description,
   onComplete,
 }: HexagramRevealProps) {
   /** 当前已揭示的行数（0~6） */
@@ -158,6 +163,8 @@ export default function HexagramReveal({
   const [goldSettled, setGoldSettled] = useState(false);
   /** 是否显示之卦 */
   const [showChanged, setShowChanged] = useState(false);
+  /** 卦名是否已浮现 */
+  const [showName, setShowName] = useState(false);
 
   const hasChangingLines = lines.some((l) => l.changing);
 
@@ -194,18 +201,26 @@ export default function HexagramReveal({
     return () => clearTimeout(timer);
   }, [flashing, changedName]);
 
-  /* 之卦显示后触发完成 */
+  /* 之卦显示后触发卦名浮现 */
   useEffect(() => {
     if (!goldSettled && revealed === 6 && !hasChangingLines) {
-      // 无变爻：全部揭示后延迟完成
-      const timer = setTimeout(onComplete, HOLD_DURATION * 1000);
+      // 无变爻：全部揭示后触发卦名浮现
+      const timer = setTimeout(() => setShowName(true), 300);
       return () => clearTimeout(timer);
     }
     if (goldSettled && (!changedName || showChanged)) {
-      const timer = setTimeout(onComplete, HOLD_DURATION * 1000);
+      // 有变爻：之卦显示后触发卦名浮现
+      const timer = setTimeout(() => setShowName(true), 300);
       return () => clearTimeout(timer);
     }
-  }, [goldSettled, showChanged, revealed, hasChangingLines, changedName, onComplete]);
+  }, [goldSettled, showChanged, revealed, hasChangingLines, changedName]);
+
+  /* 卦名浮现动画完成后回调 */
+  useEffect(() => {
+    if (!showName) return;
+    const timer = setTimeout(onComplete, (NAME_REVEAL_DURATION + HOLD_DURATION) * 1000);
+    return () => clearTimeout(timer);
+  }, [showName, onComplete]);
 
   /** 判断某行是否处于金色闪烁状态 */
   function isLineFlashing(changing: boolean): boolean {
@@ -310,15 +325,34 @@ export default function HexagramReveal({
         </AnimatePresence>
       </div>
 
-      {/* 本卦名 */}
-      <motion.p
-        className="mt-4 font-[family-name:var(--font-noto-serif)] text-base text-ink"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 3.5, duration: 0.5 }}
-      >
-        {originalName}
-      </motion.p>
+      {/* 本卦名 - 仪式感浮现 */}
+      <AnimatePresence>
+        {showName && (
+          <motion.div
+            className="mt-6 flex flex-col items-center"
+            initial={{ opacity: 0, filter: "blur(8px)" }}
+            animate={{ opacity: 1, filter: "blur(0px)" }}
+            transition={{ duration: NAME_REVEAL_DURATION, ease: "easeOut" }}
+          >
+            <h2
+              className="text-center font-[family-name:var(--font-noto-serif)] text-ink"
+              style={{ fontSize: "48px", lineHeight: 1.4 }}
+            >
+              {originalName}
+            </h2>
+            {description && (
+              <motion.p
+                className="mt-3 font-[family-name:var(--font-noto-serif)] text-base text-ink-light"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.7 }}
+                transition={{ delay: 0.6, duration: 0.8 }}
+              >
+                {description}
+              </motion.p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

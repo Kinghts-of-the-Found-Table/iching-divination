@@ -492,7 +492,7 @@ class TestBuildJudgmentPrompt(unittest.TestCase):
                 "name": "山地剥",
                 "binary": "000001",
             },
-            "rarity": "R",
+            "rarity": "中平",
         }
 
     def test_normal_hexagram_with_changing_lines(self) -> None:
@@ -594,7 +594,7 @@ class TestBuildTranslationPrompt(unittest.TestCase):
             "mutual": {
                 "name": "乾为天",
             },
-            "rarity": "SSR",
+            "rarity": "大吉",
         }
 
     def test_normal_translation_prompt(self) -> None:

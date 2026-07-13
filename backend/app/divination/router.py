@@ -134,7 +134,7 @@ async def create_divination(
     changing_lines: list[int] = hexagram_result.get("changing_lines") or []
     transformed = hexagram_result.get("transformed")
     mutual = hexagram_result.get("mutual") or {}
-    rarity: str = hexagram_result.get("rarity", "R")
+    rarity: str = hexagram_result.get("rarity", "中平")
 
     # 3. 保存 Reading 记录（judgment_cn 暂为空）
     reading = Reading(

@@ -882,4 +882,4 @@ class TestDivinationResponseSchema:
 
         # 验证稀有度
         assert "rarity" in hexagram
-        assert hexagram["rarity"] in ("N", "R", "SR", "SSR")
+        assert hexagram["rarity"] in ("慎", "中平", "吉", "大吉")

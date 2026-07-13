@@ -64,8 +64,8 @@ class TestDataIntegrity(unittest.TestCase):
             self.assertFalse(missing, f"{binary} 缺少字段: {missing}")
 
     def test_rarity_values_valid(self) -> None:
-        """稀有度必须在 {N, R, SR, SSR} 中。"""
-        valid_rarities = {"N", "R", "SR", "SSR"}
+        """稀有度必须在 {慎, 中平, 吉, 大吉} 中。"""
+        valid_rarities = {"慎", "中平", "吉", "大吉"}
         for binary, hex_data in HEXAGRAMS.items():
             rarity = hex_data["rarity"]
             self.assertIn(
@@ -82,21 +82,21 @@ class TestDataIntegrity(unittest.TestCase):
                 f"{hex_data['name']} 卦辞长度 {len(desc)}，内容: {desc}"
             )
 
-    def test_ssr_count(self) -> None:
-        """SSR 卦应为 2 卦（乾为天、坤为地）。"""
-        ssr = [h["name"] for h in HEXAGRAMS.values() if h["rarity"] == "SSR"]
-        self.assertEqual(len(ssr), 2, f"SSR 数量应为 2，实际 {len(ssr)}: {ssr}")
-        self.assertIn("乾为天", ssr)
-        self.assertIn("坤为地", ssr)
+    def test_daji_count(self) -> None:
+        """大吉卦应为 2 卦（乾为天、坤为地）。"""
+        daji = [h["name"] for h in HEXAGRAMS.values() if h["rarity"] == "大吉"]
+        self.assertEqual(len(daji), 2, f"大吉数量应为 2，实际 {len(daji)}: {daji}")
+        self.assertIn("乾为天", daji)
+        self.assertIn("坤为地", daji)
 
-    def test_sr_count(self) -> None:
-        """SR 卦应有 8 卦左右（泰、否、既济、未济、复、临、谦、大壮）。"""
-        sr = [h["name"] for h in HEXAGRAMS.values() if h["rarity"] == "SR"]
-        expected_sr = {"地天泰", "天地否", "水火既济", "火水未济",
+    def test_ji_count(self) -> None:
+        """吉卦应有 8 卦左右（泰、否、既济、未济、复、临、谦、大壮）。"""
+        ji = [h["name"] for h in HEXAGRAMS.values() if h["rarity"] == "吉"]
+        expected_ji = {"地天泰", "天地否", "水火既济", "火水未济",
                        "地雷复", "地泽临", "地山谦", "雷天大壮"}
         self.assertTrue(
-            expected_sr.issubset(set(sr)),
-            f"缺少 SR 卦: {expected_sr - set(sr)}"
+            expected_ji.issubset(set(ji)),
+            f"缺少吉卦: {expected_ji - set(ji)}""
         )
 
     def test_binary_trigram_consistency(self) -> None:
@@ -182,7 +182,7 @@ class TestCastHexagramRandom(unittest.TestCase):
                     )
 
                 # 稀有度必须在合法范围
-                self.assertIn(result["rarity"], {"N", "R", "SR", "SSR"})
+                self.assertIn(result["rarity"], {"慎", "中平", "吉", "大吉"})
 
 
 class TestCastHexagramLogic(unittest.TestCase):
@@ -346,7 +346,7 @@ class TestHexagramByName(unittest.TestCase):
         result = hexagram_by_name("乾为天")
         self.assertIsNotNone(result)
         self.assertEqual(result["name"], "乾为天")
-        self.assertEqual(result["rarity"], "SSR")
+        self.assertEqual(result["rarity"], "大吉")
 
     def test_case_sensitive(self) -> None:
         """未知卦名返回 None。"""

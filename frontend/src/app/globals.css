@@ -123,3 +123,90 @@ a:hover {
     transform: translateY(-60px) scale(0);
   }
 }
+
+/* =============================================================================
+ * MysticBackground - 神秘背景粒子动画
+ * ============================================================================= */
+
+/**
+ * 金色粒子从底部缓慢升起。
+ * opacity 0 -> 0.4 -> 0，translateY 从底部到顶部。
+ */
+@keyframes mystic-particle-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0);
+  }
+  10% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.35;
+    transform: translateY(-50vh) translateX(var(--drift, 0px));
+  }
+  90% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) translateX(var(--drift, 0px));
+  }
+}
+
+/**
+ * 大吉稀有度 - 金色光晕脉冲扩散。
+ */
+@keyframes daji-glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(196, 169, 125, 0.15), 0 0 24px rgba(196, 169, 125, 0.06);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(196, 169, 125, 0.35), 0 0 48px rgba(196, 169, 125, 0.12);
+  }
+}
+
+/**
+ * 大吉稀有度 - 粒子从卡片四周爆发飘散。
+ */
+@keyframes daji-particle-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0);
+  }
+  15% {
+    opacity: 0.8;
+    transform: translate(calc(var(--dx, 0px) * 0.3), calc(var(--dy, 0px) * 0.3)) scale(1);
+  }
+  70% {
+    opacity: 0.4;
+    transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx, 0px) * 1.2), calc(var(--dy, 0px) * 1.2)) scale(0);
+  }
+}
+
+/**
+ * 大吉稀有度 - 卦名上下浮动。
+ */
+@keyframes daji-name-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/**
+ * 吉稀有度 - 卦名亮度过渡。
+ */
+@keyframes ji-brightness {
+  0% {
+    filter: brightness(1.0);
+  }
+  100% {
+    filter: brightness(1.2);
+  }
+}

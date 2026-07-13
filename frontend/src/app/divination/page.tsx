@@ -30,6 +30,7 @@ import {
   type MockDivinationResponse,
 } from "@/lib/mock";
 import { apiPost, apiGet } from "@/lib/api";
+import { HEXAGRAM_DATA } from "@/lib/constants";
 
 /* =========================================================================
  * 类型定义
@@ -97,7 +98,7 @@ function normalizeResponse(data: RealDivinationResponse): MockDivinationResponse
           changing: changingSet.has(pos),
         };
       }),
-      rarity: (h.rarity as MockDivinationResponse["hexagram"]["rarity"]) || "R",
+      rarity: (h.rarity as MockDivinationResponse["hexagram"]["rarity"]) || "中平",
     },
     judgment: data.judgment_cn || "",
   };
@@ -409,6 +410,7 @@ export default function DivinationPage() {
               lines={revealLines}
               originalName={result.hexagram.name}
               changedName={result.hexagram.changedName}
+              description={HEXAGRAM_DATA[result.hexagram.name]}
               onComplete={handleRevealComplete}
             />
           </motion.div>

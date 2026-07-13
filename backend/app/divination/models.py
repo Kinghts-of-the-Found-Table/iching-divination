@@ -48,7 +48,7 @@ class Reading(Base):
     changing_lines = Column(JSON, default=[])
     hexagram_trans_name = Column(String, nullable=True)
     hexagram_mutual_name = Column(String, nullable=False)
-    rarity = Column(String, default="R")
+    rarity = Column(String, default="中平")
 
     # 判词（LLM 生成后填充，失败时为 null）
     judgment_cn = Column(Text, nullable=True)

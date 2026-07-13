@@ -66,7 +66,7 @@ def _build_hexagram_result(binary: str, lines: list[int]) -> dict:
 
 
 def _rarity_max(a: str, b: str) -> str:
-    """取两个稀有度中较高者。SSR > SR > R > N。"""
+    """取两个稀有度中较高者。大吉 > 吉 > 中平 > 慎。"""
     return a if RARITY_ORDER[a] >= RARITY_ORDER[b] else b
 
 
@@ -98,7 +98,7 @@ def cast_hexagram(seed: int | None = None) -> dict:
                 "name": "山地剥",
                 "binary": "000001",
             },
-            "rarity": "R",
+            "rarity": "中平",
         }
     """
     if seed is not None:

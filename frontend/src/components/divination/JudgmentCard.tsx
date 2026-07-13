@@ -74,20 +74,20 @@ function AwaitingDots() {
 /** 稀有度标签 */
 function RarityLabel({ rarity }: { rarity: Rarity }) {
   const labelMap: Record<Rarity, { text: string; className: string }> = {
-    N: {
-      text: "N",
+    慎: {
+      text: "慎",
       className: "text-warning border-warning/30",
     },
-    R: {
-      text: "R",
+    中平: {
+      text: "中平",
       className: "text-ink-light border-ink-light/20",
     },
-    SR: {
-      text: "SR",
+    吉: {
+      text: "吉",
       className: "text-gold border-gold",
     },
-    SSR: {
-      text: "SSR",
+    大吉: {
+      text: "大吉",
       className: "text-gold-light border-gold-light bg-gold-light/5",
     },
   };
@@ -189,8 +189,17 @@ export default function JudgmentCard({
           >
             {/* 卦名 + 稀有度标签 */}
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-[family-name:var(--font-noto-serif)] text-xl text-ink">
-                {rarity === "SSR" && (
+              <h3
+                className="font-[family-name:var(--font-noto-serif)] text-xl text-ink"
+                style={
+                  rarity === "大吉"
+                    ? { animation: "daji-name-float 2s ease-in-out infinite" }
+                    : rarity === "吉"
+                      ? { animation: "ji-brightness 1.5s ease-in-out infinite alternate" }
+                      : {}
+                }
+              >
+                {rarity === "大吉" && (
                   <motion.span
                     initial={{ opacity: 0, scale: 0 }}
                     animate={{ opacity: 1, scale: 1 }}

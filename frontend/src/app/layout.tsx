@@ -4,6 +4,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import DisclaimerModal from "@/components/layout/DisclaimerModal";
+import ConditionalMysticBackground from "@/components/layout/ConditionalMysticBackground";
 import "./globals.css";
 
 /**
@@ -46,7 +47,9 @@ export default function RootLayout({
         <AuthProvider>
           <Header />
           {/* 主内容：留出 Header 高度（56px）的顶部间距 */}
-          <main className="flex-1 pt-14">{children}</main>
+          <main className="relative flex-1 pt-14" style={{ zIndex: 1 }}>
+            <ConditionalMysticBackground>{children}</ConditionalMysticBackground>
+          </main>
           <Footer />
           <DisclaimerModal />
         </AuthProvider>

@@ -106,10 +106,10 @@ function getHexagramNames(hexagram: HistoryItem["hexagram"]): {
  * ========================================================================= */
 
 const RARITY_CONFIG: Record<string, { label: string; className: string }> = {
-  N: { label: "N", className: "text-ink-light/60 border-ink-light/30" },
-  R: { label: "R", className: "text-blue-600 border-blue-400/50" },
-  SR: { label: "SR", className: "text-purple-600 border-purple-400/50" },
-  SSR: { label: "SSR", className: "text-gold border-gold/60" },
+  慎: { label: "慎", className: "text-ink-light/60 border-ink-light/30" },
+  中平: { label: "中平", className: "text-blue-600 border-blue-400/50" },
+  吉: { label: "吉", className: "text-purple-600 border-purple-400/50" },
+  大吉: { label: "大吉", className: "text-gold border-gold/60" },
 };
 
 /* =========================================================================
@@ -346,7 +346,7 @@ export default function DashboardPage() {
             {history.items.map((item) => {
               const { original, changed } = getHexagramNames(item.hexagram);
               const rarity = item.hexagram?.rarity ?? "N";
-              const rarityCfg = RARITY_CONFIG[rarity] ?? RARITY_CONFIG.N;
+              const rarityCfg = RARITY_CONFIG[rarity] ?? RARITY_CONFIG["慎"];
               const snippet = item.judgment_cn
                 ? truncate(item.judgment_cn, 20)
                 : "判词生成中...";

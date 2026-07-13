@@ -1,0 +1,125 @@
+@import "tailwindcss";
+
+/* =============================================================================
+ * 六爻占卜 — 设计体系（Tailwind CSS v4）
+ * 仪式感 · 克制 · 东方审美
+ * ============================================================================= */
+
+@theme {
+  /* 配色 */
+  --color-ivory: #FDFBF7;
+  --color-ink: #3D3226;
+  --color-ink-light: #6B5D4F;
+  --color-gold: #8B7355;
+  --color-gold-light: #C4A97D;
+  --color-ikb: #0018A8;
+  --color-diviner: #F5F0E8;
+  --color-warning: #9C9488;
+
+  /* 字体 */
+  --font-heading: var(--font-noto-serif), "Source Han Serif SC", serif;
+  --font-body: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* =============================================================================
+ * 基础排版
+ * ============================================================================= */
+
+html {
+  background-color: #FDFBF7;
+  color: #3D3226;
+}
+
+body {
+  background-color: #FDFBF7;
+  color: #3D3226;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 标题使用衬线字体 */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-noto-serif), "Source Han Serif SC", serif;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+h1 { font-size: 2.25rem; }   /* 36px */
+h2 { font-size: 1.5rem; }    /* 24px */
+h3 { font-size: 1.125rem; }  /* 18px */
+
+/* 段落 */
+p {
+  margin-bottom: 1rem;
+  color: #3D3226;
+}
+
+/* 链接 */
+a {
+  color: #3D3226;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #8B7355;
+}
+
+/* 禁止暗色模式 — 强制保持仪式感暖白底 */
+@media (prefers-color-scheme: dark) {
+  html, body {
+    background-color: #FDFBF7 !important;
+    color: #3D3226 !important;
+  }
+}
+
+/* =============================================================================
+ * 工具类
+ * ============================================================================= */
+
+/* 最大阅读宽度，居中 */
+@utility reading-width {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 卡片圆角：4px — 硬朗但不锋利 */
+@utility card-rounded {
+  border-radius: 4px;
+}
+
+/* =============================================================================
+ * SSR 粒子动画
+ * ============================================================================= */
+
+/**
+ * SSR 稀有度 — 金光粒子飘散。
+ * 金色小圆点从底部升起，opacity 0→0.6→0，translateY 0→-60px，scale 0→1→0。
+ * 持续 3 秒后消失。由 RarityEffect 组件触发。
+ */
+@keyframes ssr-particle-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0);
+  }
+  20% {
+    opacity: 0.6;
+    transform: translateY(-12px) scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateY(-30px) scale(1);
+  }
+  80% {
+    opacity: 0.15;
+    transform: translateY(-48px) scale(0.8);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-60px) scale(0);
+  }
+}

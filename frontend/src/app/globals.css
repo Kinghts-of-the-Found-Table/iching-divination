@@ -210,3 +210,41 @@ a:hover {
     filter: brightness(1.2);
   }
 }
+
+/* =============================================================================
+ * 暗色背景模式 — 文字颜色覆盖
+ * ============================================================================= */
+
+/**
+ * 在神秘背景（[data-mystic-bg]）内部，将深色文字切换为适合暗底的亮色。
+ */
+[data-mystic-bg] {
+  --color-ink: #E8E0D5;
+  --color-ink-light: #B8AFA2;
+  --color-warning: #8B8070;
+  --color-diviner: rgba(255, 255, 255, 0.06);
+  --color-ivory: #0D0A14;
+}
+
+[data-mystic-bg] .text-ink,
+[data-mystic-bg] h1,
+[data-mystic-bg] h2,
+[data-mystic-bg] h3 {
+  color: #E8E0D5 !important;
+}
+
+[data-mystic-bg] .text-ink-light,
+[data-mystic-bg] .text-warning {
+  color: #B8AFA2 !important;
+}
+
+/* 暗底下的卡片保持亮底 */
+[data-mystic-bg] .bg-diviner,
+[data-mystic-bg] .bg-ivory {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 暗底下的边框色 */
+[data-mystic-bg] .border-gold {
+  border-color: rgba(196, 169, 125, 0.5) !important;
+}

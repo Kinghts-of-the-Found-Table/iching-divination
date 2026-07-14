@@ -7,7 +7,7 @@
 
 /** API 服务基础地址（可经由环境变量覆盖） */
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8766";
+  process.env.NEXT_PUBLIC_API_URL || "";
 
 /** 站点名称 */
 export const SITE_NAME = "六爻";

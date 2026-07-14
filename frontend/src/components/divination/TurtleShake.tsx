@@ -1,19 +1,17 @@
 "use client";
 
 /**
- * 龟壳摇卦动画组件（v1.2 - 逐爻点击版）
+ * 龟壳摇卦动画组件（v1.3 - 真实素材版）
  *
  * 用户每次点击龟壳摇一爻，共需点击 6 次。
  * 每次点击 → 龟壳震动 → 铜钱落下 → 显示该爻的阴阳类型和爻位名 → 传出结果。
  *
- * 交互细节：
- * - 悬停时龟壳微微放大 + 微弱光晕
- * - 点击瞬间"叩击"反馈（scale 缩小到 0.95 再弹回）
- * - 第 6 次完成后回调 onComplete
+ * 素材：Dreamina 生成的龟壳 & 铜钱（道光通宝）PNG 图片。
  */
 
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 /* =========================================================================
  * 类型定义
@@ -35,6 +33,8 @@ export interface TurtleShakeProps {
   onLineRevealed: (line: LineResult) => void;
   /** 六爻全部完成后回调 */
   onComplete: () => void;
+  /** 已摇出的爻列表（由父组件管理，用于纵向展示） */
+  collectedLines?: LineResult[];
 }
 
 /* =========================================================================
@@ -66,44 +66,42 @@ function castOneLine(): number {
 }
 
 /* =========================================================================
- * 子组件：CSS 龟壳
+ * 子组件：龟壳（真实图片）
  * ========================================================================= */
-
-function ShellOval({ className, rotate = 0 }: { className?: string; rotate?: number }) {
-  return (
-    <div
-      className={`absolute rounded-[50%] border-2 border-gold-light/20 ${className ?? ""}`}
-      style={{
-        transform: `rotate(${rotate}deg)`,
-        background: "radial-gradient(ellipse at 50% 40%, #8B7355 0%, #5C4033 60%, #3D2E1E 100%)",
-      }}
-    />
-  );
-}
 
 function TurtleShell() {
   return (
-    <div className="relative flex items-center justify-center w-40 h-48 sm:w-48 sm:h-56">
-      <ShellOval className="w-36 h-48 sm:w-44 sm:h-56" />
-      <ShellOval className="w-32 h-44 sm:w-40 sm:h-52" rotate={-8} />
-      <ShellOval className="w-32 h-44 sm:w-40 sm:h-52" rotate={8} />
-      <div className="absolute top-[28%] w-16 sm:w-20 h-[2px] bg-gold-light/15 rounded-full" />
-      <div className="absolute top-[35%] w-20 sm:w-24 h-[2px] bg-gold-light/15 rounded-full" />
-      <div className="absolute top-[42%] w-18 sm:w-22 h-[2px] bg-gold-light/15 rounded-full" />
+    <div className="relative flex items-center justify-center w-44 h-52 sm:w-52 sm:h-60">
+      <Image
+        src="/images/turtle-shell.webp"
+        alt="龟壳"
+        width={280}
+        height={320}
+        className="object-contain drop-shadow-[0_0_24px_rgba(196,169,125,0.12)]"
+        priority
+      />
     </div>
   );
 }
 
 /* =========================================================================
- * 子组件：铜钱
+ * 子组件：铜钱（真实图片）
  * ========================================================================= */
 
-function Coin() {
+// 预生成 18 枚铜钱的正反面（6 爻 × 3 枚），模块级静态生成
+const COIN_FACES: boolean[] = Array.from({ length: 18 }, () => Math.random() < 0.5);
+
+function Coin({ index }: { index: number }) {
+  const isFront = COIN_FACES[index];
   return (
-    <div className="relative flex items-center justify-center w-6 h-6">
-      <div className="absolute inset-0 rounded-full bg-[#C4A97D] shadow-[inset_0_1px_3px_rgba(0,0,0,0.2)]" />
-      <div className="absolute inset-[2px] rounded-full border border-[#A68B5B]" />
-      <div className="absolute w-[6px] h-[6px] bg-[#1A1520] rounded-[0.5px]" />
+    <div className="relative flex items-center justify-center w-14 h-14">
+      <Image
+        src={isFront ? "/images/coin-front.webp" : "/images/coin-back.webp"}
+        alt={isFront ? "铜钱正面" : "铜钱背面"}
+        width={56}
+        height={56}
+        className="object-contain"
+      />
     </div>
   );
 }
@@ -112,7 +110,7 @@ function Coin() {
  * 主组件
  * ========================================================================= */
 
-export default function TurtleShake({ onLineRevealed, onComplete }: TurtleShakeProps) {
+export default function TurtleShake({ onLineRevealed, onComplete, collectedLines }: TurtleShakeProps) {
   const [isShaking, setIsShaking] = useState(false);
   const [isDone, setIsDone] = useState(false);
   const [landedCoins, setLandedCoins] = useState(0);
@@ -162,7 +160,7 @@ export default function TurtleShake({ onLineRevealed, onComplete }: TurtleShakeP
   return (
     <div className="flex flex-col items-center justify-center gap-6 px-4 py-8">
       {/* 进度提示 */}
-      <p className="font-[family-name:var(--font-noto-serif)] text-base text-gold-light/80">
+      <p className="font-[family-name:var(--font-noto-serif)] text-sm text-gold-light/80">
         {isDone
           ? "卦象已成"
           : isShaking
@@ -202,53 +200,68 @@ export default function TurtleShake({ onLineRevealed, onComplete }: TurtleShakeP
         </motion.div>
       </motion.div>
 
-      {/* 铜钱落地区域 */}
-      <div className="flex flex-wrap justify-center gap-x-10 gap-y-3 sm:gap-x-14">
-        {LINE_NAMES.map((name, i) => {
-          const isLanded = i < landedCoins;
-          const isLatest = i === landedCoins - 1 && lastLine;
-          return (
-            <div key={name} className="flex flex-col items-center gap-2">
-              <div className="flex gap-2">
+      {/* 爻位展示区域：纵向堆叠 + 大字大图 */}
+      <div className="min-h-[200px] flex flex-col items-center gap-4">
+        {/* 当前爻大图（最后摇出的那爻） */}
+        <AnimatePresence>
+          {lastLine && (
+            <motion.div
+              key={lastLine.position}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="flex flex-col items-center gap-3 py-4"
+            >
+              <div className="flex gap-3">
                 {[0, 1, 2].map((coinIdx) => (
-                  <div key={coinIdx} className="w-6 h-6">
-                    <AnimatePresence>
-                      {isLanded && (
-                        <motion.div
-                          initial={{ y: -100, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{
-                            type: "spring", stiffness: 300, damping: 12,
-                            delay: coinIdx * 0.08, duration: 0.5,
-                          }}
-                        >
-                          <Coin />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                  <motion.div
+                    key={coinIdx}
+                    initial={{ y: -100, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{
+                      type: "spring", stiffness: 300, damping: 12,
+                      delay: coinIdx * 0.12, duration: 0.5,
+                    }}
+                  >
+                    <Coin index={(lastLine.position - 1) * 3 + coinIdx} />
+                  </motion.div>
                 ))}
               </div>
-              {/* 爻位名称 + 类型 */}
-              <span className={`text-[10px] font-[family-name:var(--font-body)] transition-colors duration-300 ${
-                isLanded ? (isLatest && lastLine?.changing ? "text-gold-light" : "text-gold-light/70") : "text-warning"
-              }`}>
-                {name}
+              <span className="font-[family-name:var(--font-noto-serif)] text-2xl text-gold-light">
+                {lastLine.typeName}
               </span>
-              {isLatest && lastLine && (
-                <motion.span
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`text-[10px] font-[family-name:var(--font-body)] ${
-                    lastLine.changing ? "text-gold-light" : "text-gold-light/60"
-                  }`}
-                >
-                  {lastLine.typeName}
-                </motion.span>
+              <span className="text-base text-gold-light/60">
+                {lastLine.positionName}
+              </span>
+              {lastLine.changing && (
+                <span className="text-sm text-gold">变爻</span>
               )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 已摇出的爻纵向列表 */}
+        {collectedLines && collectedLines.length > 0 && (
+          <div className="w-full max-w-[240px] mx-auto">
+            <p className="text-xs text-warning/50 mb-2 text-center">已得卦象</p>
+            <div className="flex flex-col gap-1.5">
+              {collectedLines.map((line) => (
+                <div key={line.position} className="flex items-center gap-2 text-sm">
+                  <span className="text-gold-light/60 w-10 text-right">{line.positionName}</span>
+                  <span className={line.changing ? "text-gold-light" : "text-gold-light/50"}>
+                    {line.typeName}
+                  </span>
+                  {line.changing && (
+                    <span className="text-xs text-gold border border-gold/30 rounded px-1.5 py-0.5">
+                      变
+                    </span>
+                  )}
+                </div>
+              ))}
             </div>
-          );
-        })}
+          </div>
+        )}
       </div>
 
       <div className="h-4" />

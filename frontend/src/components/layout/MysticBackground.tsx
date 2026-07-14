@@ -56,7 +56,7 @@ export default function MysticBackground({
       <div
         className="fixed inset-0 pointer-events-none"
         style={{
-          backgroundImage: mounted ? "url(/images/mystic-bg.png)" : "none",
+          backgroundImage: mounted ? "url(/images/mystic-bg.webp)" : "none",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",

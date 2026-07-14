@@ -188,7 +188,7 @@ export default function DivinationPage() {
                 ))}
               </div>
             </div>
-            <TurtleShake onLineRevealed={handleLineRevealed} onComplete={handleShakeComplete} />
+            <TurtleShake onLineRevealed={handleLineRevealed} onComplete={handleShakeComplete} collectedLines={collectedLines} />
           </motion.div>
         )}
       </AnimatePresence>

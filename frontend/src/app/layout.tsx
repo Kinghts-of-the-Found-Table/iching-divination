@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import DisclaimerModal from "@/components/layout/DisclaimerModal";
 import ThemeToggle from "@/components/layout/ThemeToggle";
+import AnimeDecor from "@/components/layout/AnimeDecor";
 import ConditionalMysticBackground from "@/components/layout/ConditionalMysticBackground";
 import "./globals.css";
 
@@ -51,6 +52,7 @@ export default function RootLayout({
       <body className="flex min-h-full flex-col bg-ivory text-ink">
         <ThemeProvider>
           <AuthProvider>
+            <AnimeDecor />
             <ThemeToggle />
             <Header />
             {/* 主内容：留出 Header 高度（56px）的顶部间距 */}

@@ -77,7 +77,7 @@ function TurtleShell() {
         alt="龟壳"
         width={280}
         height={320}
-        className="object-contain drop-shadow-[0_0_24px_rgba(196,169,125,0.12)]"
+        className="object-contain rounded-2xl drop-shadow-[0_0_24px_rgba(196,169,125,0.12)]"
         priority
       />
     </div>
@@ -94,13 +94,13 @@ const COIN_FACES: boolean[] = Array.from({ length: 18 }, () => Math.random() < 0
 function Coin({ index }: { index: number }) {
   const isFront = COIN_FACES[index];
   return (
-    <div className="relative flex items-center justify-center w-14 h-14">
+    <div className="relative flex items-center justify-center w-14 h-14 rounded-full overflow-hidden">
       <Image
         src={isFront ? "/images/coin-front.webp" : "/images/coin-back.webp"}
         alt={isFront ? "铜钱正面" : "铜钱背面"}
-        width={56}
-        height={56}
-        className="object-contain"
+        width={72}
+        height={72}
+        className="object-cover scale-110"
       />
     </div>
   );

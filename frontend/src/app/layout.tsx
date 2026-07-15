@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Noto_Serif_SC } from "next/font/google";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ThemeProvider, ThemeScript } from "@/hooks/useTheme";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import DisclaimerModal from "@/components/layout/DisclaimerModal";
+import ThemeToggle from "@/components/layout/ThemeToggle";
 import ConditionalMysticBackground from "@/components/layout/ConditionalMysticBackground";
 import "./globals.css";
 
@@ -43,16 +45,22 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${notoSerifSC.variable} h-full antialiased`}
     >
+      <head>
+        <ThemeScript />
+      </head>
       <body className="flex min-h-full flex-col bg-ivory text-ink">
-        <AuthProvider>
-          <Header />
-          {/* 主内容：留出 Header 高度（56px）的顶部间距 */}
-          <main className="relative flex-1 pt-14" style={{ zIndex: 1 }}>
-            <ConditionalMysticBackground>{children}</ConditionalMysticBackground>
-          </main>
-          <Footer />
-          <DisclaimerModal />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <ThemeToggle />
+            <Header />
+            {/* 主内容：留出 Header 高度（56px）的顶部间距 */}
+            <main className="relative flex-1 pt-14" style={{ zIndex: 1 }}>
+              <ConditionalMysticBackground>{children}</ConditionalMysticBackground>
+            </main>
+            <Footer />
+            <DisclaimerModal />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

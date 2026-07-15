@@ -59,7 +59,7 @@ function InterpretationBlock({
       transition={{ duration: 0.4, ease: "easeOut" }}
     >
       {/* 段标题 — serif + ink */}
-      <h4 className="mb-3 font-[family-name:var(--font-noto-serif)] text-base text-ink">
+      <h4 className="mb-3 font-[family-name:var(--font-noto-serif)] text-base" style={{ color: 'var(--color-text)' }}>
         {title}
       </h4>
 
@@ -134,7 +134,7 @@ export default function InterpretationSection({
               animate={{ opacity: [0.2, 1, 0.2] }}
               transition={{ duration: 1.2, repeat: Infinity, delay: 0.8 }}
             />
-            <span className="ml-2 text-sm text-warning font-[family-name:var(--font-body)]">
+            <span className="ml-2 text-sm font-[family-name:var(--font-body)]" style={{ color: 'var(--color-text-secondary)' }}>
               解读中...
             </span>
           </motion.div>
@@ -148,7 +148,7 @@ export default function InterpretationSection({
             animate={{ opacity: 1 }}
             className="py-6 text-center"
           >
-            <p className="text-sm text-warning font-[family-name:var(--font-body)]">
+            <p className="text-sm font-[family-name:var(--font-body)]" style={{ color: 'var(--color-text-secondary)' }}>
               {error}
             </p>
           </motion.div>

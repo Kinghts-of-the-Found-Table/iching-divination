@@ -30,6 +30,6 @@ export default function ConditionalMysticBackground({
   const showMystic = !NO_MYSTIC_PATHS.has(pathname);
 
   return (
-    <MysticBackground show={showMystic}>{children}</MysticBackground>
+    <MysticBackground>{children}</MysticBackground>
   );
 }

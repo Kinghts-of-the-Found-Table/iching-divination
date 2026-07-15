@@ -9,12 +9,12 @@ import { DISCLAIMER } from "@/lib/constants";
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gold/10 bg-ivory py-12">
+    <footer className="border-t py-12" style={{ background: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
       <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
-        <p className="mb-3 text-sm leading-relaxed text-warning">
+        <p className="mb-3 text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
           {DISCLAIMER}
         </p>
-        <p className="text-xs text-warning/70">
+        <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
           &copy; 2026 六爻占卜 &middot; 传统文化体验平台
         </p>
       </div>
